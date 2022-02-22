@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <head>
+        <title>JavaScript D3 Plot</title>
+            <div class="p-3 bg-light border">
+              <h4> </h4>
+              <div id="vis-container-legend"> 
+                <select id="studyButton"></select>
+              </div>
+            </div>
+            
+        <style> /* set the CSS */
+        body {
+            margin: 0px;
+            overflow: hidden;
+        } 
+    
+        text {
+            font-family: sans-serif;
+        }
+    
+        .tick text {
+            font-size: 2em;
+            fill: #635F5D;
+        }
+    
+        .tick line {
+            stroke: #C0C0BB;
+        }
+    
+        .axis-label {
+            font-size: 2em;
+            fill: 'black'
+        }
+    
+        div.tooltip {	
+            position: absolute;			
+            text-align: left;			
+            width: 500px;					
+            height: 45px;					
+            padding: 2px;				
+            font: 12px sans-serif;		
+            background: lightsteelblue;	
+            border: 0px;		
+            border-radius: 8px;			
+            pointer-events: none;			
+        }
+        </style>
+      </head>
+
+    </style>
+    <script src="https://d3js.org/d3.v6.min.js"></script>
+  </head>
+  <body>
+    
+    <svg width="1200" height="650"></svg>
+    
+    <div id="vis-container"></div>
+
+    <script>
+        const svg = d3.select('svg');
+
+        const width = +svg.attr('width');
+        const height = +svg.attr('height');
+
+        const studyNames = ['PASS_ADHD_Demontis2018', 'PASS_AgeFirstBirth','PASS_Alzheimers_Jansen2019','PASS_Anorexia',
+        'PASS_AtrialFibrillation_Nielsen2018','PASS_Autism','PASS_BDSCZ_Ruderfer2018','PASS_BMI1','PASS_CD_deLange2017','PASS_Celiac',
+        'PASS_CigarettesPerDay_Liu2019','PASS_Coronary_Artery_Disease','PASS_DrinksPerWeek_Liu2019','PASS_Ever_Smoked',
+        'PASS_GeneralRiskTolerance_KarlssonLinner2019','PASS_HDL','PASS_Height1','PASS_IBD_deLange2017','PASS_Insomnia_Jansen2019',
+        'PASS_Intelligence_SavageJansen2018','PASS_IschemicStroke_Malik2018','PASS_LDL','PASS_Lupus','PASS_MDD_Wray2018',
+        'PASS_MedicationUse_Wu2019','PASS_NumberChildrenEverBorn','PASS_ProstateCancer','PASS_ReactionTime_Davies2018',
+        'PASS_Rheumatoid_Arthritis','PASS_SCZvsBD_Ruderfer2018','PASS_SleepDuration_Dashti2019','PASS_Type_2_Diabetes','PASS_UC_deLange2017',
+        'PASS_Years_of_Education1','UKB_460K.biochemistry_AlkalinePhosphatase','UKB_460K.biochemistry_AspartateAminotransferase',
+        'UKB_460K.biochemistry_Cholesterol','UKB_460K.biochemistry_Creatinine','UKB_460K.biochemistry_IGF1','UKB_460K.biochemistry_Phosphate',
+        'UKB_460K.biochemistry_Testosterone_Male','UKB_460K.biochemistry_TotalBilirubin','UKB_460K.biochemistry_TotalProtein',
+        'UKB_460K.biochemistry_VitaminD','UKB_460K.blood_EOSINOPHIL_COUNT','UKB_460K.blood_PLATELET_COUNT','UKB_460K.blood_RBC_DISTRIB_WIDTH',
+        'UKB_460K.blood_RED_COUNT','UKB_460K.blood_WHITE_COUNT','UKB_460K.bmd_HEEL_TSCOREz','UKB_460K.body_BALDING1','UKB_460K.body_BMIz',
+        'UKB_460K.body_HEIGHTz','UKB_460K.body_WHRadjBMIz','UKB_460K.bp_DIASTOLICadjMEDz','UKB_460K.cancer_BREAST','UKB_460K.cancer_PROSTATE',
+        'UKB_460K.cov_EDU_YEARS','UKB_460K.disease_AID_SURE','UKB_460K.disease_ALLERGY_ECZEMA_DIAGNOSED','UKB_460K.disease_HYPOTHYROIDISM_SELF_REP',
+        'UKB_460K.lung_FEV1FVCzSMOKE','UKB_460K.lung_FVCzSMOKE','UKB_460K.mental_NEUROTICISM','UKB_460K.other_MORNINGPERSON',
+        'UKB_460K.pigment_SUNBURN','UKB_460K.repro_MENARCHE_AGE','UKB_460K.repro_MENOPAUSE_AGE','UKB_460K.repro_NumebrChildrenEverBorn_Pooled']
+
+        d3.select("#studyButton")
+          .selectAll('myOptions')
+     	    .data(studyNames)
+          .enter()
+            .append('option')
+          .text(function (d) { return d; }) // text showed in the menu
+          .attr("value", function (d) { return d; }) // corresponding value returned by the button
+
+        var study = 'PASS_ADHD_Demontis2018'
+
+        var div = d3.select("body").append("div")	
+            .attr("class", "tooltip")				
+            .style("opacity", 0);
+
+        function runPlotter(study) {
+            var filename = 'https://screen-beta-api.wenglab.org/factorbook_downloads/ldr/' + study + '_enrichment.csv'
+            console.log(filename)
+            d3.csv(filename)
+            .then(data => {
+                data.forEach(d => {
+                    d.File = d.FileName;
+                    d.Enrichment = +d.Enrichment;
+                    d.Region = d.Region;
+                    d.SubRegion = d.SubRegion
+                    d.Position = +d.Position;
+                });
+                console.log(data)
+        
+            const xValue = d => d.Position;
+            const xAxisLabel = 'Position';
+            
+            const yValue = d => d.Enrichment;
+            const yAxisLabel = 'Enrichment';
+
+            const colorValue = d => d.SubRegion;
+            
+            const margin = { top: 50, right: 40, bottom: 88, left: 150 };
+            const innerWidth = width - margin.left - margin.right - 200;
+            const legendWidth = width - innerWidth + 450;
+            const innerHeight = height - margin.top - margin.bottom;
+            
+            const matrix = [
+                {index: 1, name: 'basal forebrain', color: '#26456c'},
+                {index: 2, name: 'basal forebrain NeuN-', color: '#853b3c'},
+                {index: 3, name: 'cerebral cortex', color: '#5b7438'},
+                {index: 4, name: 'cerebral cortex NeuN-', color: '#d5832f'},
+                {index: 5, name: 'frontal lobe', color: '#768e84'},
+                {index: 6, name: 'Hippocampus', color: '#b02f38'},
+                {index: 7, name: 'Hippocampys NeuN-', color: '#918ccd'},
+                {index: 8, name: 'midbrain', color: '#c8c286'},
+                {index: 9, name: 'parietal lobe', color: '#955634'},
+                {index: 10, name: 'prefrontal cortex', color: '#7f92a6'},  
+                {index: 11, name: 'prefrontal cortex NeuN-', color: '#3f6d66'},
+                {index: 12, name: 'temporal lobe', color: '#998850'},
+                {index: 13, name: 'temporal lobe NeuN-', color: '#baa29d'},
+                {index: 14, name: 'thalamus', color: '#f6d348'},
+                {index: 15, name: 'thalamus NeuN-', color: '#dce6eb'}             
+            ];
+
+            const xScale = d3.scaleLinear()
+                .domain(d3.extent(data, xValue))
+                .range([0, innerWidth])
+                .nice();
+            
+            const yScale = d3.scaleLinear()
+                .domain(d3.extent(data, yValue))
+                .range([innerHeight, 0])
+                .nice();
+
+            const colorScale = d3.scaleOrdinal()
+                .domain(data.map(colorValue))
+                .range(['#26456c', '#853b3c', '#5b7438', '#d5832f', '#768e84','#b02f38','#918ccd','#c8c286','#955634',
+                '#7f92a6','#3f6d66','#998850','#baa29d','#f6d348','#dce6eb']);
+            
+            const g = svg.append('g')
+                .attr('transform', `translate(${margin.left},${margin.top})`);
+
+            g.append('text')
+                .attr('class', 'axis-label')
+                .attr('y', -15)
+                .attr('x', 400)
+                .attr('fill', 'black')
+                .attr('text-anchor', 'middle')
+                .text(study)
+            
+            const xAxis = d3.axisBottom(xScale)
+                .tickSize(-innerHeight)
+                .tickPadding(15);
+            
+            const yAxis = d3.axisLeft(yScale)
+                .tickSize(-innerWidth)
+                .tickPadding(10);
+            
+            const yAxisG = g.append('g').call(yAxis);
+            yAxisG.selectAll('.domain').remove();
+            
+            yAxisG.append('text')
+                .attr('class', 'axis-label')
+                .attr('y', -93)
+                .attr('x', -innerHeight / 2)
+                .attr('fill', 'black')
+                .attr('transform', `rotate(-90)`)
+                .attr('text-anchor', 'middle')
+                .text(yAxisLabel);
+            
+            const xAxisG = g.append('g').call(xAxis)
+                .attr('transform', `translate(0,${innerHeight})`);
+            
+            xAxisG.select('.domain').remove();
+
+            var tooltip = d3.select("#vis-container").append("div")
+                .attr("class", "tooltip")
+                .style("opacity", 0);
+            
+            console.log(xScale(xValue(0)))
+
+            g.append('line')
+                .style("stroke", "red")
+                .style("stroke-width", 5)
+                .attr("x1", xScale(0))
+                .attr("y1", yScale(0))
+                .attr("x2", xScale(800))
+                .attr("y2", yScale(0));
+            
+            g.selectAll('circle').data(data)
+                .enter().append('circle')
+                .attr('cy', d => yScale(yValue(d)))
+                .attr('cx', d => xScale(xValue(d)))
+                .attr('r', 3)
+                .attr('fill', d => colorScale(colorValue(d)))
+                .attr('stroke', d => colorScale(colorValue(d)))
+                .on("mouseover", function(d) {		
+                    div.transition()		
+                        .duration(200)		
+                        .style("opacity", .9);		
+                    div.html("FileName: " + d3.select(this)._groups[0][0].__data__.FileName + "<br>" +    
+                                "Region: " + d3.select(this)._groups[0][0].__data__.Region + "<br>" +
+                                "Enrichment: " + d3.select(this)._groups[0][0].__data__.Enrichment)	
+                        .style("left", d3.select(this).attr("cx") + "px")		
+                        .style("top", d3.select(this).attr("cy") + "px");	
+                    })					
+                .on("mouseout", function(d) {		
+                    div.transition()		
+                        .duration(500)		
+                        .style("opacity", 0);	
+                });
+
+            const legend1 = g.append('g');
+
+            //Legend title
+            legend1.append('text')
+                .attr('y', height - innerHeight - 100)
+                .attr('x', legendWidth)
+                .attr('fill', 'black')
+                .attr('font-size', '1.5em')
+                .attr('text-anchor', 'left')
+                .text("Region");
+
+            //Circles for manu legend
+            legend1.selectAll('circle').data(matrix)
+                .enter().append('circle')
+                .attr('cy', d => height - innerHeight - 100 + (30*d.index))
+                .attr('cx', d => legendWidth + 5)
+                .attr('r', d => 5)
+                .attr('fill', d => d.color);
+
+            const legend1txt = legend1.append('g');
+            
+            //Text for manu legend
+            legend1txt.selectAll('text').data(matrix)
+                .enter(). append('text')
+                .attr('y', d => height - innerHeight - 100 + (30*d.index))
+                .attr('x', d => legendWidth + 25)
+                .attr('fill', 'black')
+                .attr('font-size', '1em')
+                .attr('text-anchor', 'left')
+                .text(function(d){
+                    return d.name;
+                })
+           
+        });
+        }
+
+
+        runPlotter(study);
+
+        // CHANGE BASED ON DROPDOWN VALUE
+        d3.select("#studyButton").on("change", function(d) {
+            study = d3.select(this).property("value")
+            updateStudy(study)
+        })
+
+        // clears entire SVG, plots entire SVG
+        function updateStudy(study) {
+            svg.selectAll("*").remove();
+            runPlotter(study)
+        }
+        
+    </script>
+  </body>
+</html>
