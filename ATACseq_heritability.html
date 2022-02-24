@@ -96,7 +96,7 @@
             .style("opacity", 0);
 
         function runPlotter(study) {
-            var filename = 'https://screen-beta-api.wenglab.org/factorbook_downloads/ldr/' + study + '_enrichment.csv'
+            var filename = 'https://screen-beta-api.wenglab.org/factorbook_downloads/ldr/' + study + '_enrichment_extended.csv'
             console.log(filename)
             d3.csv(filename)
             .then(data => {
