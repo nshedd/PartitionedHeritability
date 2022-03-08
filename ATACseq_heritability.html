@@ -7,6 +7,8 @@
               <h4> </h4>
               <div id="vis-container-legend"> 
                 <select id="studyButton"></select>
+                <select id="sequencingButton"></select>
+                <select id="analysisButton"></select>
               </div>
             </div>
             
@@ -91,12 +93,36 @@
 
         var study = 'PASS_ADHD_Demontis2018'
 
+        const sequencingTypes = ['ATACseq','ChIPseq']
+
+        d3.select("#sequencingButton")
+          .selectAll('myOptions')
+     	    .data(sequencingTypes)
+          .enter()
+            .append('option')
+          .text(function (d) { return d; }) // text showed in the menu
+          .attr("value", function (d) { return d; }) // corresponding value returned by the button
+
+        var sequencingType = 'ATACseq'
+
+        const analysisTypes = ['LDR','gchromVAR']
+
+        d3.select("#analysisButton")
+          .selectAll('myOptions')
+     	    .data(analysisTypes)
+          .enter()
+            .append('option')
+          .text(function (d) { return d; }) // text showed in the menu
+          .attr("value", function (d) { return d; }) // corresponding value returned by the button
+
+        var analysis = 'LDR'
+
         var div = d3.select("body").append("div")	
             .attr("class", "tooltip")				
             .style("opacity", 0);
 
-        function runPlotter(study) {
-            var filename = 'https://screen-beta-api.wenglab.org/factorbook_downloads/ldr/' + study + '_enrichment_extended.csv'
+        function runPlotter(study,sequencingType,analysis) {
+            var filename = 'https://screen-beta-api.wenglab.org/factorbook_downloads/ldr/' + study + '_enrichment_' + sequencingType + '_' + analysis + '.csv'
             console.log(filename)
             d3.csv(filename)
             .then(data => {
@@ -202,7 +228,7 @@
                 .style("stroke-width", 5)
                 .attr("x1", xScale(0))
                 .attr("y1", yScale(0))
-                .attr("x2", xScale(800))
+                .attr("x2", xScale(450))
                 .attr("y2", yScale(0));
             
             g.selectAll('circle').data(data)
@@ -265,18 +291,28 @@
         }
 
 
-        runPlotter(study);
+        runPlotter(study,sequencingType,analysis);
 
         // CHANGE BASED ON DROPDOWN VALUE
         d3.select("#studyButton").on("change", function(d) {
             study = d3.select(this).property("value")
-            updateStudy(study)
+            updateStudy(study,sequencingType,analysis)
+        })
+
+        d3.select("#sequencingButton").on("change", function(d) {
+            sequencingType = d3.select(this).property("value")
+            updateStudy(study,sequencingType,analysis)
+        })
+
+        d3.select("#analysisButton").on("change", function(d) {
+            analysis = d3.select(this).property("value")
+            updateStudy(study,sequencingType,analysis)
         })
 
         // clears entire SVG, plots entire SVG
-        function updateStudy(study) {
+        function updateStudy(study,sequencingType,analysis) {
             svg.selectAll("*").remove();
-            runPlotter(study)
+            runPlotter(study,sequencingType,analysis)
         }
         
     </script>
