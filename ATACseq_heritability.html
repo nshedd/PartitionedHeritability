@@ -196,13 +196,18 @@
                 useColorScale = ChIPseqColorScale
             }
 
+            var yScaleValue = d3.extent(data, yValue)
+            if (d3.min(data, yValue) > 0) {
+                yScaleValue = [0,d3.max(data, yValue)]
+            }
+
             const xScale = d3.scaleLinear()
                 .domain(d3.extent(data, xValue))
                 .range([0, innerWidth])
                 .nice();
             
             const yScale = d3.scaleLinear()
-                .domain(d3.extent(data, yValue))
+                .domain(yScaleValue)
                 .range([innerHeight, 0])
                 .nice();
 
