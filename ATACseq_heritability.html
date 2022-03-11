@@ -123,7 +123,9 @@
 
         function runPlotter(study,sequencingType,analysis) {
             var filename = 'https://screen-beta-api.wenglab.org/factorbook_downloads/ldr/' + study + '_enrichment_' + sequencingType + '_' + analysis + '.csv'
+            
             console.log(filename)
+
             d3.csv(filename)
             .then(data => {
                 data.forEach(d => {
@@ -133,8 +135,7 @@
                     d.SubRegion = d.SubRegion
                     d.Position = +d.Position;
                 });
-                console.log(data)
-        
+                
             const xValue = d => d.Position;
             const xAxisLabel = 'Position';
             
@@ -148,7 +149,7 @@
             const legendWidth = width - innerWidth + 450;
             const innerHeight = height - margin.top - margin.bottom;
             
-            const matrix = [
+            const ATACseqMatrix = [
                 {index: 1, name: 'basal forebrain', color: '#26456c'},
                 {index: 2, name: 'basal forebrain NeuN-', color: '#853b3c'},
                 {index: 3, name: 'cerebral cortex', color: '#5b7438'},
@@ -166,6 +167,35 @@
                 {index: 15, name: 'thalamus NeuN-', color: '#dce6eb'}             
             ];
 
+            const ATACseqColorScale = ['#26456c', '#853b3c', '#5b7438', '#d5832f', '#768e84','#b02f38','#918ccd','#c8c286','#955634',
+                '#7f92a6','#3f6d66','#998850','#baa29d','#f6d348','#dce6eb']
+
+            const ChIPseqMatrix = [
+                {index: 1, name: 'DLPFC', color: '#68affc'},
+                {index: 2, name: 'GABA', color: '#5dd12f'},
+                {index: 3, name: 'GLU', color: '#eb67f9'},
+                {index: 4, name: 'Oli', color: '#57832e'},
+                {index: 5, name: 'ACC_NeuN+', color: '#7d0af6'},
+                {index: 6, name: 'ACC_NeuN-', color: '#b1d34f'},
+                {index: 7, name: 'PFC_NeuN+', color: '#7048b1'},
+                {index: 8, name: 'PFC_NeuN-', color: '#f4d16a'},
+                {index: 9, name: 'CBC', color: '#9b1b5c'},
+                {index: 10, name: 'DFC', color: '#76e8ca'}          
+            ];
+
+            const ChIPseqColorScale = ["#68affc", "#5dd12f", "#eb67f9", "#57832e", "#7d0af6", "#b1d34f", "#7048b1", "#f4d16a", "#9b1b5c", "#76e8ca"]
+
+            var matrix = ATACseqMatrix
+            var useColorScale = ATACseqColorScale
+
+            if (sequencingType == 'ATACseq') {
+                matrix = ATACseqMatrix
+                useColorScale = ATACseqColorScale
+            } else if (sequencingType == 'ChIPseq') {
+                matrix = ChIPseqMatrix
+                useColorScale = ChIPseqColorScale
+            }
+
             const xScale = d3.scaleLinear()
                 .domain(d3.extent(data, xValue))
                 .range([0, innerWidth])
@@ -178,8 +208,7 @@
 
             const colorScale = d3.scaleOrdinal()
                 .domain(data.map(colorValue))
-                .range(['#26456c', '#853b3c', '#5b7438', '#d5832f', '#768e84','#b02f38','#918ccd','#c8c286','#955634',
-                '#7f92a6','#3f6d66','#998850','#baa29d','#f6d348','#dce6eb']);
+                .range(useColorScale);
             
             const g = svg.append('g')
                 .attr('transform', `translate(${margin.left},${margin.top})`);
@@ -228,7 +257,7 @@
                 .style("stroke-width", 5)
                 .attr("x1", xScale(0))
                 .attr("y1", yScale(0))
-                .attr("x2", xScale(450))
+                .attr("x2", xScale(d3.max(data, xValue)))
                 .attr("y2", yScale(0));
             
             g.selectAll('circle').data(data)
