@@ -80,7 +80,7 @@
 
         var study = 'PASS_ADHD_Demontis2018'
 
-        const sequencingTypes = ['ATACseq','ChIPseq-H3K27ac','ChIPseq-H3K4me3']
+        const sequencingTypes = ['ATACseq','DNase-seq','ChIPseq-H3K27ac','ChIPseq-H3K4me3']
 
         d3.select("#sequencingButton")
           .selectAll('myOptions')
@@ -138,6 +138,10 @@
                 peak = '';
             }
 
+            if (sequencingType == 'DNase-seq') {
+                brain = 'Inlcude Non-Brain Tissue';
+            } // remove later when you have time
+
             var brainval = ''
             if (brain == 'Inlcude Non-Brain Tissue') {
                 brainval = '_Non-Brain-incl'
@@ -191,8 +195,8 @@
 
             if (brain == 'Inlcude Non-Brain Tissue') {
                 ATACseqMatrix = [
-                    {index: 1, name: 'ENTEx', color: '#70084f'},
-                    {index: 2, name: 'Immune Cells', color: '#441d59'},
+                    {index: 1, name: 'Immune Cells', color: '#70084f'},
+                    {index: 2, name: 'ENTEx', color: '#441d59'},
                     {index: 3, name: 'basal forebrain', color: '#26456c'},
                     {index: 4, name: 'basal forebrain NeuN-', color: '#853b3c'},
                     {index: 5, name: 'cerebral cortex', color: '#5b7438'},
@@ -218,6 +222,28 @@
                 ATACseqColorScale = ['#70084f','#441d59','#26456c', '#853b3c', '#5b7438', '#d5832f', '#768e84','#b02f38','#918ccd','#c8c286','#955634',
                 '#7f92a6','#3f6d66','#998850','#baa29d','#f6d348','#dce6eb']
             }
+
+            var DNaseseqMatrix = [
+                    {index: 1, name: 'Artery', color: '#70084f'},
+                    {index: 2, name: 'Brain', color: '#441d59'},
+                    {index: 3, name: 'Bone', color: '#26456c'},
+                    {index: 4, name: 'Digestive', color: '#853b3c'},
+                    {index: 5, name: 'Embryonic', color: '#5b7438'},
+                    {index: 6, name: 'Endocrine', color: '#d5832f'},
+                    {index: 7, name: 'Excretory', color: '#768e84'},
+                    {index: 8, name: 'Eye', color: '#b02f38'},
+                    {index: 9, name: 'Heart', color: '#918ccd'},
+                    {index: 10, name: 'Immune', color: '#c8c286'},
+                    {index: 11, name: 'Lung', color: '#955634'},
+                    {index: 12, name: 'Muscle', color: '#7f92a6'},  
+                    {index: 13, name: 'Perpheral Nervous System', color: '#3f6d66'},
+                    {index: 14, name: 'Reproductive', color: '#998850'},
+                    {index: 15, name: 'Skin', color: '#baa29d'},         
+                ];
+
+            var DNaseseqColorScale = ['#26456c', '#853b3c', '#5b7438', '#d5832f', '#768e84','#b02f38','#918ccd','#c8c286','#955634',
+                '#7f92a6','#3f6d66','#998850','#baa29d']
+
 
             var ChIPseqH3K27acMatrix = [
                 {index: 1, name: 'CNON', color: '#fa9e52'},
@@ -300,7 +326,7 @@
             } else if (sequencingType == 'ChIPseq-H3K27ac') {
                 matrix = ChIPseqH3K27acMatrix
                 useColorScale = ChIPseqH3K27acColorScale
-            }else if (sequencingType == 'ChIPseq-H3K4me3') {
+            } else if (sequencingType == 'ChIPseq-H3K4me3') {
                 matrix = ChIPseqH3K4me3Matrix
                 useColorScale = ChIPseqH3K4me3ColorScale
             }
