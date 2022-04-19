@@ -92,7 +92,7 @@
 
         var sequencingType = 'ATACseq'
 
-        const peakTypes = ['AllPeaks','ProximalPeaks','DistalPeaks','ProximalrDHSs','DistalrDHSs','AllZScores','ProximalZScores','DistalZScores']
+        const peakTypes = ['AllPeaks','ProximalPeaks','DistalPeaks','AllrDHSs','ProximalrDHSs','DistalrDHSs','AllZScores','ProximalZScores','DistalZScores']
 
         d3.select("#peaksButton")
           .selectAll('myOptions')
@@ -246,23 +246,24 @@
 
 
             var ChIPseqH3K27acMatrix = [
-                {index: 1, name: 'DLPFC', color: '#68affc'},
-                {index: 2, name: 'GABA', color: '#5dd12f'},
-                {index: 3, name: 'GLU', color: '#eb67f9'},
-                {index: 4, name: 'Oli', color: '#57832e'},
-                {index: 5, name: 'ACC_NeuN+', color: '#7d0af6'},
-                {index: 6, name: 'ACC_NeuN-', color: '#b1d34f'},
-                {index: 7, name: 'PFC_NeuN+', color: '#7048b1'},
-                {index: 8, name: 'PFC_NeuN-', color: '#f4d16a'},
-                {index: 9, name: 'CBC', color: '#9b1b5c'},
-                {index: 10, name: 'DFC', color: '#76e8ca'}          
+                {index: 1, name: 'CNON', color: '#fa9e52'},
+                {index: 2, name: 'DLPFC', color: '#68affc'},
+                {index: 3, name: 'GABA', color: '#5dd12f'},
+                {index: 4, name: 'GLU', color: '#eb67f9'},
+                {index: 5, name: 'Oli', color: '#57832e'},
+                {index: 6, name: 'ACC_NeuN+', color: '#7d0af6'},
+                {index: 7, name: 'ACC_NeuN-', color: '#b1d34f'},
+                {index: 8, name: 'PFC_NeuN+', color: '#7048b1'},
+                {index: 9, name: 'PFC_NeuN-', color: '#f4d16a'},
+                {index: 10, name: 'CBC', color: '#9b1b5c'},
+                {index: 11, name: 'DFC', color: '#76e8ca'}          
             ];
             
             if (brain == 'Inlcude Non-Brain Tissue') {
                 ChIPseqH3K27acMatrix = [
                     {index: 1, name: 'Immune', color: '#a65d03'},
                     {index: 2, name: 'ENTEx', color: '#a6035f'},
-                    {index: 3, name: 'iPSCs', color: '#0314a6'},
+                    {index: 3, name: 'CNON', color: '#fa9e52'},
                     {index: 4, name: 'DLPFC', color: '#68affc'},
                     {index: 5, name: 'GABA', color: '#5dd12f'},
                     {index: 6, name: 'GLU', color: '#eb67f9'},
@@ -283,20 +284,21 @@
             }
 
             var ChIPseqH3K4me3Matrix = [
-                {index: 1, name: 'DLPFC', color: '#68affc'},
-                {index: 2, name: 'ACC_NeuN+', color: '#7d0af6'},
-                {index: 3, name: 'ACC_NeuN-', color: '#b1d34f'},
-                {index: 4, name: 'PFC_NeuN+', color: '#7048b1'},
-                {index: 5, name: 'PFC_NeuN-', color: '#f4d16a'},
-                {index: 6, name: 'CBC', color: '#9b1b5c'},
-                {index: 7, name: 'DFC', color: '#76e8ca'}           
+                {index: 1, name: 'CNON', color: '#fa9e52'},
+                {index: 2, name: 'DLPFC', color: '#68affc'},
+                {index: 3, name: 'ACC_NeuN+', color: '#7d0af6'},
+                {index: 4, name: 'ACC_NeuN-', color: '#b1d34f'},
+                {index: 5, name: 'PFC_NeuN+', color: '#7048b1'},
+                {index: 6, name: 'PFC_NeuN-', color: '#f4d16a'},
+                {index: 7, name: 'CBC', color: '#9b1b5c'},
+                {index: 8, name: 'DFC', color: '#76e8ca'}           
             ];
 
             if (brain == 'Inlcude Non-Brain Tissue') {
                 ChIPseqH3K4me3Matrix = [
                     {index: 1, name: 'Immune', color: '#a65d03'},
                     {index: 2, name: 'ENTEx', color: '#a6035f'},
-                    {index: 3, name: 'iPSCs', color: '#0314a6'},
+                    {index: 3, name: 'CNON', color: '#fa9e52'},
                     {index: 4, name: 'DLPFC', color: '#68affc'},
                     {index: 5, name: 'ACC_NeuN+', color: '#7d0af6'},
                     {index: 6, name: 'ACC_NeuN-', color: '#b1d34f'},
